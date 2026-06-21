@@ -1,0 +1,113 @@
+# =============================================================================
+# FUENTES CLÍNICAS — Anafilaxia Perioperatoria
+#
+# Estas fuentes son candidatas para la validación de las reglas del escenario.
+# Ninguna regla debe considerarse VALIDATED hasta que un médico revisor
+# la firme en el panel de validación (/admin) con referencia explícita a
+# la sección y página de la fuente correspondiente.
+# =============================================================================
+
+sources:
+
+  NAP6:
+    title: "Sixth National Audit Project of the Royal College of Anaesthetists: Perioperative Anaphylaxis"
+    authors: "Harper NJN, Cook TM, Garcez T, et al."
+    publisher: "Royal College of Anaesthetists / AAGBI"
+    year: 2018
+    url: "https://www.rcoa.ac.uk/nap6"
+    doi: null
+    access_date: null
+    validated_by: null
+    validation_date: null
+    notes: >
+      Fuente primaria para epidemiología, agentes causales, grados de severidad
+      y tiempos de progresión de anafilaxia perioperatoria en UK.
+      Incluye datos sobre causas (látex, antibióticos, relajantes musculares),
+      tiempo hasta colapso y protocolos de manejo.
+    rules_covered:
+      - "state:GRADE_I:auto_advance_after_seconds"
+      - "state:GRADE_II:auto_advance_after_seconds"
+      - "state:GRADE_III:auto_advance_after_seconds"
+      - "state:GRADE_IV:auto_advance_after_seconds"
+      - "vitals:GRADE_I:hr_delta_per_second"
+      - "vitals:GRADE_II:sbp_delta_per_second"
+      - "vitals:GRADE_III:spo2_delta_per_second"
+
+  WAO_2020:
+    title: "World Allergy Organization Anaphylaxis Guidance 2020"
+    authors: "Simons FER, Ardusso LRF, Bilò MB, et al."
+    publisher: "World Allergy Organization"
+    year: 2020
+    url: "https://www.worldallergy.org/education-and-programs/education/allergic-disease-resource-center/professionals/anaphylaxis-guidelines"
+    doi: "10.1186/s40413-020-00282-1"
+    access_date: null
+    validated_by: null
+    validation_date: null
+    notes: >
+      Guía de referencia global para el manejo de anafilaxia.
+      Incluye dosis de epinefrina (IM e IV), indicaciones, vías de administración
+      y criterios de respuesta al tratamiento. Recomendada por WAO como
+      primera línea de evidencia para protocolos educativos.
+    rules_covered:
+      - "action:ADMINISTER_EPINEPHRINE_IM:dose"
+      - "action:ADMINISTER_EPINEPHRINE_IV:dose"
+      - "action:ADMINISTER_FLUIDS_IV:dose"
+      - "action:ADMINISTER_ANTIHISTAMINE_IV:dose"
+      - "action:ADMINISTER_CORTICOSTEROID:dose"
+
+  ACAAI_AAAAI_2015:
+    title: "Joint Task Force on Practice Parameters: The Diagnosis and Management of Anaphylaxis Practice Parameter"
+    authors: "Lieberman P, Nicklas RA, Randolph C, et al."
+    publisher: "American College of Allergy, Asthma & Immunology / American Academy of Allergy, Asthma & Immunology"
+    year: 2015
+    url: "https://www.jacionline.org/article/S0091-6749(14)01463-6/fulltext"
+    doi: "10.1016/j.jaci.2014.10.007"
+    access_date: null
+    validated_by: null
+    validation_date: null
+    notes: >
+      Parámetro de práctica para diagnóstico y manejo de anafilaxia.
+      Pendiente actualización (la más reciente es de 2015). Complementa
+      WAO_2020 en criterios diagnósticos y estratificación de severidad.
+      Verificar si existe versión posterior antes de validar.
+    rules_covered:
+      - "action:ADMINISTER_EPINEPHRINE_IM:dose"
+      - "action:ADMINISTER_ANTIHISTAMINE_IV:dose"
+      - "action:ADMINISTER_CORTICOSTEROID:dose"
+
+  AHA_ACLS_2020:
+    title: "2020 American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care"
+    authors: "Panchal AR, Bartos JA, Cabañas JG, et al."
+    publisher: "American Heart Association"
+    year: 2020
+    url: "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines"
+    doi: "10.1161/CIR.0000000000000916"
+    access_date: null
+    validated_by: null
+    validation_date: null
+    notes: >
+      Guía AHA 2020 para RCP y cuidado cardiovascular de emergencia.
+      Referencia para dosis de epinefrina en paro cardíaco (Grado IV),
+      ritmos de RCP, e integración con manejo de anafilaxia con colapso.
+    rules_covered:
+      - "action:ADMINISTER_EPINEPHRINE_CPR:dose"
+      - "state:GRADE_IV:auto_advance_after_seconds"
+
+  AUSTRALASIAN_ANAPHYLAXIS_2021:
+    title: "Australasian Society of Clinical Immunology and Allergy (ASCIA) Anaphylaxis Management Plan"
+    authors: "ASCIA"
+    publisher: "ASCIA"
+    year: 2021
+    url: "https://www.allergy.org.au/hp/papers/anaphylaxis-management-plan"
+    doi: null
+    access_date: null
+    validated_by: null
+    validation_date: null
+    notes: >
+      Protocolo de manejo de anafilaxia de ASCIA. Útil como fuente
+      secundaria para comparar dosis y vías de administración con
+      otras guías internacionales. No es la fuente primaria preferida
+      pero aporta perspectiva independiente.
+    rules_covered:
+      - "action:ADMINISTER_EPINEPHRINE_IM:dose"
+      - "action:ADMINISTER_FLUIDS_IV:dose"
