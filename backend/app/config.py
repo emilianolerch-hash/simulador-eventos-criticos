@@ -11,6 +11,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 _ENV: Literal["development", "production"] = os.environ.get("ENV", "development")  # type: ignore[assignment]
 
 _JWT_SECRET_FALLBACK = "dev-secret-only-change-in-production"
+_ADMIN_SECRET_FALLBACK = "dev-admin-secret-change-in-production"
 
 
 def _get_jwt_secret() -> str:
@@ -52,6 +53,9 @@ class Settings:
     # Rate limiting (requests per minute per IP)
     rate_limit_login: int = int(os.environ.get("RATE_LIMIT_LOGIN", "10"))
     rate_limit_register: int = int(os.environ.get("RATE_LIMIT_REGISTER", "5"))
+
+    # Secret para operaciones de administración (ej. promover usuarios a validator)
+    admin_secret: str = os.environ.get("ADMIN_SECRET", _ADMIN_SECRET_FALLBACK)
 
 
 settings = Settings()

@@ -1,7 +1,8 @@
-"""Auth endpoints: register, login, me."""
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+"""Auth endpoints: register, login, me, promote."""
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.auth.deps import get_current_user
 from app.auth.jwt import create_access_token, hash_password, verify_password
@@ -20,7 +21,6 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     full_name: str
-    role: str = "anesthesiologist"
 
 
 class LoginRequest(BaseModel):
@@ -48,8 +48,6 @@ def register(
     db: Session = Depends(get_db),
     _: None = Depends(_register_limiter),
 ):
-    if body.role not in ("anesthesiologist", "validator"):
-        raise HTTPException(400, "role debe ser 'anesthesiologist' o 'validator'")
     existing = db.query(User).filter(User.email == body.email).first()
     if existing:
         raise HTTPException(409, "El email ya está registrado")
@@ -57,7 +55,7 @@ def register(
         email=body.email,
         password_hash=hash_password(body.password),
         full_name=body.full_name,
-        role=body.role,
+        role="anesthesiologist",
     )
     db.add(user)
     db.commit()
@@ -88,4 +86,28 @@ def login(
 
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
+    return UserOut(id=user.id, email=user.email, full_name=user.full_name, role=user.role)
+
+
+class PromoteRequest(BaseModel):
+    email: EmailStr
+
+
+@router.post("/promote", response_model=UserOut)
+def promote_to_validator(
+    body: PromoteRequest,
+    x_admin_secret: Optional[str] = Header(default=None),
+    db: Session = Depends(get_db),
+):
+    """Promueve un usuario existente al rol 'validator'. Requiere X-Admin-Secret."""
+    if not x_admin_secret or x_admin_secret != settings.admin_secret:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin secret inválido")
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"Usuario '{body.email}' no encontrado")
+    if user.role == "validator":
+        raise HTTPException(status_code=409, detail="El usuario ya es validador")
+    user.role = "validator"
+    db.commit()
+    db.refresh(user)
     return UserOut(id=user.id, email=user.email, full_name=user.full_name, role=user.role)
