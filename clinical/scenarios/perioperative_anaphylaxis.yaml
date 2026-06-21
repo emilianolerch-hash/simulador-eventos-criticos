@@ -1,0 +1,1003 @@
+# =============================================================================
+# ESPECIFICACIÓN CLÍNICA — Anafilaxia Perioperatoria
+#
+# Propósito: documento de referencia educativa para revisión médica y
+# generación del motor de simulación. NO usar en práctica clínica real.
+#
+# Estado: PENDING_MEDICAL_REVIEW en su totalidad.
+# Todos los valores numéricos, dosis, tiempos y criterios clínicos
+# son ficticios/provisionales hasta que un médico los valide y firme.
+# =============================================================================
+
+metadata:
+  id: "perioperative_anaphylaxis_v1"
+  title: "Anafilaxia Perioperatoria — Especificación Clínica"
+  version: "0.1.0-draft"
+  language: "es"
+  educational_disclaimer: true
+  target_audience: "anesthesiologist"
+  runtime_scenario_id: "anaphylaxis_perioperative_adult_v1"
+
+# =============================================================================
+# POBLACIÓN OBJETIVO
+# =============================================================================
+
+population:
+  age_range: "18-65 años"
+  sex: "cualquiera"
+  weight_range: "50-100 kg  # PENDING_MEDICAL_REVIEW — relevante para cálculo de dosis"
+  asa_class_range: "I-III"
+  exclusion_criteria:
+    - "Antecedente conocido de alergia a látex (escenario no aplica)"
+    - "Cardiopatía isquémica activa  # PENDING_MEDICAL_REVIEW"
+    - "Embarazo  # PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# ÁMBITO ASISTENCIAL
+# =============================================================================
+
+clinical_setting:
+  environment: "Quirófano de cirugía general"
+  phase: "Inducción anestésica / inicio de cirugía electiva"
+  monitoring_available:
+    - "ECG de 5 derivaciones"
+    - "Pulsioximetría continua"
+    - "Presión arterial no invasiva"
+    - "Capnografía (EtCO2)"
+    - "Temperatura"
+  medications_available:
+    - "Adrenalina (epinefrina) IM e IV"
+    - "Suero fisiológico 0.9%"
+    - "Difenhidramina IV  # PENDING_MEDICAL_REVIEW — disponibilidad variable por país"
+    - "Metilprednisolona IV"
+    - "Salbutamol inhalado"
+    - "Glucagón  # PENDING_MEDICAL_REVIEW — para pacientes en betabloqueantes"
+  personnel:
+    - "Anestesiólogo responsable"
+    - "Técnico en anestesia / enfermería quirúrgica"
+    - "Cirujano (notificar inmediatamente)"
+    - "Equipo de reanimación (llamar si grado III-IV)"
+
+# =============================================================================
+# DIFICULTAD Y OBJETIVOS
+# =============================================================================
+
+difficulty:
+  level: "intermedio"
+  learning_objectives:
+    - "Reconocer precozmente los signos cutáneos y hemodinámicos de anafilaxia perioperatoria"
+    - "Administrar adrenalina como primera línea sin demora injustificada"
+    - "Diferenciar el grado de reacción y escalar el tratamiento adecuadamente"
+    - "Comunicar la emergencia y coordinar al equipo quirúrgico"
+    - "Iniciar RCP ante paro cardiorrespiratorio por anafilaxia"
+  prerequisites:
+    - "Conocimiento básico de farmacología de la adrenalina"
+    - "Manejo de vía aérea básico"
+    - "Principios de RCP básica avanzada"
+  estimated_duration_minutes: 20
+
+# =============================================================================
+# DESCRIPCIÓN INICIAL (TEXTO QUE VE EL ESTUDIANTE AL INICIAR)
+# =============================================================================
+
+initial_description: >
+  Son las 09:15 h. Usted es el anestesiólogo responsable de una colecistectomía
+  laparoscópica electiva en un varón de 42 años, ASA II, sin alergias conocidas
+  en la historia clínica. La inducción transcurrió sin incidentes: propofol 2 mg/kg,
+  fentanilo 2 mcg/kg, rocuronio 0.6 mg/kg. El paciente está intubado y ventilado.
+  La enfermera circulante coloca el campo quirúrgico con guantes de látex estándar.
+  A los 90 segundos aparece urticaria en el dorso de ambas manos y el monitor
+  emite una alarma de taquicardia.
+
+# =============================================================================
+# ANTECEDENTES DEL PACIENTE
+# =============================================================================
+
+patient_history:
+  allergies_known: "Ninguna alergia documentada en historia clínica preoperatoria"
+  current_medications:
+    - "Omeprazol 20 mg/día (enfermedad por reflujo)"
+    - "Sin otros medicamentos regulares"
+  relevant_history: >
+    Colecistitis aguda resuelta hace 6 meses. Sin cirugías previas.
+    Sin antecedentes de atopía documentados. Contacto ocupacional previo
+    con látex no valorado en consulta preanestésica.  # PENDING_MEDICAL_REVIEW
+  last_meal: "Ayuno confirmado de 8 horas"
+  anesthetic_history: "Primera anestesia general"
+
+# =============================================================================
+# SIGNOS VITALES INICIALES
+# =============================================================================
+
+initial_vitals:
+  validation_status: "PENDING_MEDICAL_REVIEW"
+  source_ref: "NAP6_2018"
+  values:
+    heart_rate_bpm: 78
+    systolic_bp_mmhg: 125
+    diastolic_bp_mmhg: 80
+    spo2_percent: 99
+    respiratory_rate_rpm: 14
+    etco2_mmhg: 38
+    temperature_celsius: 36.5
+
+# =============================================================================
+# INFORMACIÓN VISIBLE PARA EL ESTUDIANTE
+# =============================================================================
+
+visible_information:
+  monitor_displays:
+    - "FC: 78 lpm → sube a 98 lpm tras aparición de la reacción"
+    - "PAS: 125 mmHg → empieza a descender según grado"
+    - "SpO2: 99% → desciende progresivamente sin tratamiento"
+    - "EtCO2: 38 mmHg → puede subir con broncoespasmo"
+  clinical_signs:
+    - "Urticaria generalizada (dorso de manos y tronco)"
+    - "Rubor facial eritematoso"
+    - "Prurito (valorable por movimiento si el paciente no está profundamente anestesiado)"
+    - "Broncoespasmo: aumento de presión pico en ventilación mecánica"
+  contextual_clues:
+    - "Guantes de látex visibles en el campo quirúrgico"
+    - "Alarma de taquicardia en el monitor"
+    - "El cirujano pregunta si algo va mal"
+
+# =============================================================================
+# DIAGNÓSTICO OCULTO
+# =============================================================================
+
+hidden_diagnosis:
+  diagnosis: "Anafilaxia perioperatoria por sensibilización a látex"
+  mechanism: >
+    Reacción de hipersensibilidad inmediata mediada por IgE (tipo I) contra
+    proteínas del látex natural. La sensibilización previa asintomática
+    es común en profesionales de la salud y pacientes con espina bífida u
+    otras condiciones con exposición quirúrgica repetida.
+    PENDING_MEDICAL_REVIEW — mecanismo a validar por inmunólogo.
+  causative_agent: "Látex (guantes quirúrgicos)"
+  validation_status: "PENDING_MEDICAL_REVIEW"
+  source_ref: "NAP6_2018"
+
+# =============================================================================
+# DESENCADENANTE
+# =============================================================================
+
+trigger:
+  agent: "Látex (guantes quirúrgicos de la enfermera circulante)"
+  timing_description: >
+    Exposición al iniciar la preparación del campo quirúrgico, aprox.
+    90 segundos tras la inducción. El paciente está intubado y no verbaliza.
+  mechanism: >
+    PENDING_MEDICAL_REVIEW — degranulación mastocitaria y basofílica
+    mediada por IgE anti-látex con liberación de histamina, triptasa,
+    leucotrienos y prostaglandinas.
+  common_perioperative_triggers:
+    - "Látex  # más frecuente — PENDING_MEDICAL_REVIEW"
+    - "Antibióticos β-lactámicos  # PENDING_MEDICAL_REVIEW"
+    - "Relajantes musculares (rocuronio, succinilcolina)  # PENDING_MEDICAL_REVIEW"
+    - "Clorhexidina  # PENDING_MEDICAL_REVIEW"
+    - "Coloides (gelatinas, almidones)  # PENDING_MEDICAL_REVIEW"
+    - "Colorantes (azul patente, isosulfán)  # PENDING_MEDICAL_REVIEW"
+    - "AINE / AAS  # PENDING_MEDICAL_REVIEW"
+  validation_status: "PENDING_MEDICAL_REVIEW"
+  source_ref: "NAP6_2018"
+
+# =============================================================================
+# ESTADOS CLÍNICOS
+# =============================================================================
+
+clinical_states:
+
+  GRADE_I:
+    label: "Grado I — Reacción cutánea"
+    description: >
+      Signos cutáneos aislados sin compromiso hemodinámico ni respiratorio.
+    typical_presentation: >
+      Urticaria generalizada, eritema, angioedema localizado, prurito.
+      Paciente consciente (si no está anestesiado) y hemodinámicamente estable.
+    vital_signs_description:
+      hr: "80-110 lpm  # PENDING_MEDICAL_REVIEW"
+      sbp: "100-130 mmHg  # PENDING_MEDICAL_REVIEW"
+      spo2: "96-99%  # PENDING_MEDICAL_REVIEW"
+      rr: "14-18 rpm  # PENDING_MEDICAL_REVIEW"
+    diagnostic_criteria:
+      - "Urticaria / angioedema SIN hipotensión ni broncoespasmo"
+      - "Inicio agudo tras exposición a agente sospechoso"
+    clinical_urgency: "urgente"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  GRADE_II:
+    label: "Grado II — Reacción sistémica moderada"
+    description: >
+      Compromiso hemodinámico leve-moderado y/o broncoespasmo incipiente.
+    typical_presentation: >
+      Hipotensión leve (PAS < 90 mmHg), taquicardia sinusal > 100 lpm,
+      broncoespasmo con aumento de presión pico, angioedema progresivo.
+    vital_signs_description:
+      hr: "100-130 lpm  # PENDING_MEDICAL_REVIEW"
+      sbp: "70-90 mmHg  # PENDING_MEDICAL_REVIEW"
+      spo2: "88-95%  # PENDING_MEDICAL_REVIEW"
+      rr: "18-24 rpm  # PENDING_MEDICAL_REVIEW"
+    diagnostic_criteria:
+      - "Hipotensión: PAS < 90 mmHg o descenso > 30% del basal  # PENDING_MEDICAL_REVIEW"
+      - "Taquicardia sinusal > 100 lpm con signos cutáneos"
+      - "Broncoespasmo: presión pico > 35 cmH2O  # PENDING_MEDICAL_REVIEW"
+    clinical_urgency: "emergente"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  GRADE_III:
+    label: "Grado III — Colapso cardiovascular"
+    description: >
+      Colapso cardiovascular severo, broncoespasmo grave, pérdida de
+      consciencia (en paciente no anestesiado).
+    typical_presentation: >
+      PAS < 50 mmHg, taquicardia extrema o bradicardia, SpO2 < 85%
+      refractaria a O2, broncoespasmo que impide ventilación adecuada.
+    vital_signs_description:
+      hr: "< 50 o > 150 lpm  # PENDING_MEDICAL_REVIEW"
+      sbp: "< 50 mmHg  # PENDING_MEDICAL_REVIEW"
+      spo2: "< 85%  # PENDING_MEDICAL_REVIEW"
+      rr: "> 30 rpm o apnea  # PENDING_MEDICAL_REVIEW"
+    diagnostic_criteria:
+      - "PAS < 50 mmHg  # PENDING_MEDICAL_REVIEW"
+      - "SpO2 < 85% con O2 al 100%  # PENDING_MEDICAL_REVIEW"
+      - "Consciencia abolida (en paciente no anestesiado)"
+    clinical_urgency: "inmediata"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  GRADE_IV:
+    label: "Grado IV — Paro cardiorrespiratorio"
+    description: >
+      Asistolia, FV o actividad eléctrica sin pulso secundaria a anafilaxia.
+    typical_presentation: >
+      Ausencia de pulso central, monitor con asistolia o FV/TVSP.
+      Apnea. Sin respuesta a estímulos.
+    vital_signs_description:
+      hr: "0 lpm (asistolia) o FV  # PENDING_MEDICAL_REVIEW"
+      sbp: "0 mmHg (no registrable)  # PENDING_MEDICAL_REVIEW"
+      spo2: "no registrable  # PENDING_MEDICAL_REVIEW"
+      rr: "apnea  # PENDING_MEDICAL_REVIEW"
+    diagnostic_criteria:
+      - "Ausencia de pulso central palpable"
+      - "Monitor: asistolia / FV / AESP"
+      - "Apnea"
+    clinical_urgency: "inmediata"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "ACLS_AHA_2020"
+
+# =============================================================================
+# TRANSICIONES ENTRE ESTADOS
+# =============================================================================
+
+transitions:
+
+  - from_state: "GRADE_I"
+    to_state: "GRADE_II"
+    trigger_description: >
+      Ausencia de tratamiento adecuado durante el tiempo umbral,
+      o progresión natural de la reacción anafiláctica sin intervención.
+    clinical_basis: >
+      PENDING_MEDICAL_REVIEW — la progresión de grado I a II ocurre en
+      minutos en reacciones severas; el tiempo exacto varía por alérgeno,
+      dosis y estado inmunológico del paciente.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - from_state: "GRADE_II"
+    to_state: "GRADE_III"
+    trigger_description: >
+      Tratamiento ausente o insuficiente. Liberación mediadora continua.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - from_state: "GRADE_III"
+    to_state: "GRADE_IV"
+    trigger_description: >
+      Paro cardiorrespiratorio por hipoxia prolongada, shock anafiláctico
+      refractario, o hipoxia miocárdica.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "ACLS_AHA_2020"
+
+  - from_state: "GRADE_I"
+    to_state: "RESOLVING"
+    trigger_description: >
+      Administración oportuna de adrenalina y suspensión del agente desencadenante.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - from_state: "GRADE_II"
+    to_state: "RESOLVING"
+    trigger_description: >
+      Adrenalina IV o IM + fluidoterapia agresiva.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - from_state: "GRADE_III"
+    to_state: "RESOLVING"
+    trigger_description: >
+      Adrenalina IV inmediata + soporte hemodinámico intensivo.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - from_state: "GRADE_IV"
+    to_state: "RESOLVING_AFTER_CPR"
+    trigger_description: >
+      RCP efectiva + adrenalina en dosis de paro cardíaco → ROSC.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "ACLS_AHA_2020"
+
+# =============================================================================
+# ACCIONES CRÍTICAS
+# =============================================================================
+
+critical_actions:
+
+  - id: "RECOGNIZE_REACTION"
+    label: "Reconocer la reacción anafiláctica"
+    rationale: >
+      La identificación precoz es el paso determinante. La demora en el
+      reconocimiento es la causa más frecuente de desenlace fatal en
+      anafilaxia perioperatoria. PENDING_MEDICAL_REVIEW.
+    time_window: "< 3 minutos desde los primeros signos  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: >
+      Progresión a grado II-III sin tratamiento. Aumento del riesgo de
+      paro cardiorrespiratorio. PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "STOP_TRIGGER"
+    label: "Suspender el agente desencadenante"
+    rationale: >
+      Interrumpir la exposición al alérgeno detiene la liberación de
+      mediadores. Acción simultánea con la adrenalina.
+      PENDING_MEDICAL_REVIEW.
+    time_window: "Inmediato al reconocimiento  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: >
+      Liberación continua de mediadores. Mayor dosis de adrenalina requerida.
+      PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "ADMINISTER_EPINEPHRINE"
+    label: "Administrar adrenalina (primera línea)"
+    rationale: >
+      La adrenalina es el único tratamiento de primera línea con evidencia
+      consistente en anafilaxia. Su demora es el factor modificable más
+      importante asociado a mortalidad. PENDING_MEDICAL_REVIEW.
+    time_window: "< 5 minutos desde el reconocimiento  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: >
+      Progresión de grado I-II a III-IV. Riesgo de paro cardiorrespiratorio
+      y muerte. PENDING_MEDICAL_REVIEW.
+    source_ref: "WAO_2020"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "CALL_FOR_HELP"
+    label: "Activar código azul / solicitar ayuda"
+    rationale: >
+      La anafilaxia perioperatoria requiere manejo de equipo. Un solo
+      profesional no puede simultáneamente administrar medicación, gestionar
+      vía aérea y monitorizar al paciente. PENDING_MEDICAL_REVIEW.
+    time_window: "Simultáneo a las primeras acciones  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: >
+      Sobrecarga del anestesiólogo. Mayor probabilidad de errores de medicación.
+      PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "IV_FLUID_BOLUS"
+    label: "Bolo de fluidos IV para hipotensión"
+    rationale: >
+      La vasodilatación masiva y el aumento de permeabilidad capilar generan
+      hipovolemia relativa. La expansión de volumen es complementaria —
+      no reemplaza — a la adrenalina. PENDING_MEDICAL_REVIEW.
+    time_window: "En el contexto de grado II-III con hipotensión  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: >
+      Hipotensión refractaria, shock distributivo prolongado.
+      PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "START_CPR"
+    label: "Iniciar RCP ante paro cardiorrespiratorio"
+    rationale: >
+      En grado IV (paro cardíaco), la RCP es la intervención inmediata
+      obligatoria. Cada minuto sin compresiones reduce la sobrevida.
+      PENDING_MEDICAL_REVIEW.
+    time_window: "Inmediato al diagnóstico de paro  # PENDING_MEDICAL_REVIEW"
+    time_window_validation_status: "PENDING_MEDICAL_REVIEW"
+    failure_consequence: "Muerte. PENDING_MEDICAL_REVIEW."
+    source_ref: "ACLS_AHA_2020"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# ACCIONES INCORRECTAS
+# =============================================================================
+
+incorrect_actions:
+
+  - id: "ANTIHISTAMINE_INSTEAD_OF_EPINEPHRINE"
+    label: "Administrar antihistamínico como primera línea en lugar de adrenalina"
+    consequence: >
+      Los antihistamínicos tienen inicio de acción lento y no revierten
+      el broncoespasmo ni la hipotensión. Su uso como primera línea
+      demora el tratamiento efectivo. PENDING_MEDICAL_REVIEW.
+    teaching_point: >
+      Los antihistamínicos son tratamiento de segunda línea y no deben
+      administrarse antes de la adrenalina en anafilaxia moderada-grave.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DELAY_EPINEPHRINE"
+    label: "Demorar la adrenalina más de 5 minutos tras el reconocimiento"
+    consequence: >
+      Progresión del grado de reacción. Mayor riesgo de paro
+      cardiorrespiratorio. PENDING_MEDICAL_REVIEW.
+    teaching_point: >
+      La demora en adrenalina es el factor modificable más frecuentemente
+      asociado a mortalidad en anafilaxia. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "CORTICOSTEROID_AS_FIRST_LINE"
+    label: "Administrar corticosteroide como primera medida"
+    consequence: >
+      Retraso de al menos 4-6 horas para ver efecto antiinflamatorio.
+      No actúa en la fase aguda. PENDING_MEDICAL_REVIEW.
+    teaching_point: >
+      Los corticosteroides tienen rol en la prevención de reacción bifásica
+      pero no en el tratamiento agudo. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "INSUFFICIENT_EPINEPHRINE_DOSE"
+    label: "Administrar dosis de adrenalina insuficiente"
+    consequence: >
+      Respuesta parcial o nula. Puede dar falsa sensación de fracaso
+      terapéutico y llevar al uso de fármacos alternativos incorrectos.
+      PENDING_MEDICAL_REVIEW.
+    teaching_point: >
+      La dosis de adrenalina debe ser la correcta para la vía y el grado
+      de reacción. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "CONTINUE_SURGERY"
+    label: "Continuar la cirugía sin resolver la reacción"
+    consequence: >
+      Agravamiento inevitable de la reacción. Dificultad para monitorizar
+      la respuesta al tratamiento durante el acto quirúrgico.
+      PENDING_MEDICAL_REVIEW.
+    teaching_point: >
+      Ante anafilaxia perioperatoria de cualquier grado, la cirugía debe
+      suspenderse hasta estabilización del paciente. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# TIEMPOS LÍMITE
+# =============================================================================
+
+time_limits:
+
+  - id: "RECOGNITION_WINDOW"
+    label: "Ventana de reconocimiento"
+    event_description: "Desde la aparición de los primeros signos cutáneos hasta el diagnóstico activo"
+    limit: "< 3 minutos  # PENDING_MEDICAL_REVIEW"
+    rationale: >
+      Reconocimiento tardío es la causa más frecuente de mortalidad
+      evitable en anafilaxia perioperatoria. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "NAP6_2018"
+
+  - id: "EPINEPHRINE_WINDOW"
+    label: "Ventana para primera dosis de adrenalina"
+    event_description: "Desde el reconocimiento hasta la administración de adrenalina"
+    limit: "< 5 minutos  # PENDING_MEDICAL_REVIEW"
+    rationale: >
+      Cada minuto de demora en adrenalina aumenta el riesgo de paro
+      cardiorrespiratorio. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - id: "CPR_WINDOW"
+    label: "Ventana para inicio de RCP"
+    event_description: "Desde el diagnóstico de paro cardiorrespiratorio hasta compresiones"
+    limit: "< 1 minuto  # PENDING_MEDICAL_REVIEW"
+    rationale: >
+      La supervivencia en paro cardíaco disminuye ~10% por cada minuto
+      sin RCP. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "ACLS_AHA_2020"
+
+  - id: "FLUID_BOLUS_WINDOW"
+    label: "Ventana para bolo de fluidos en hipotensión"
+    event_description: "Desde el diagnóstico de hipotensión significativa hasta inicio de bolo"
+    limit: "< 10 minutos  # PENDING_MEDICAL_REVIEW"
+    rationale: >
+      La expansión de volumen temprana complementa la adrenalina en el
+      manejo del shock distributivo anafiláctico. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "NAP6_2018"
+
+# =============================================================================
+# EVOLUCIÓN FISIOLÓGICA
+# =============================================================================
+
+physiological_progression:
+
+  - id: "PHYS_CUTANEOUS_GRADE_I"
+    state: "GRADE_I"
+    description: >
+      Vasodilatación cutánea por histamina → eritema, urticaria, prurito.
+      FC aumenta por taquicardia refleja y efecto directo de mediadores.
+    clinical_basis: "PENDING_MEDICAL_REVIEW — mecanismo a validar"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - id: "PHYS_HEMODYNAMIC_GRADE_II"
+    state: "GRADE_II"
+    description: >
+      Vasodilatación sistémica marcada (histamina, prostaglandinas) →
+      disminución de RVS → hipotensión. Taquicardia compensadora.
+      Broncoespasmo por leucotrienos → aumento presión pico en VM.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - id: "PHYS_COLLAPSE_GRADE_III"
+    state: "GRADE_III"
+    description: >
+      Colapso cardiovascular por shock distributivo severo.
+      Hipoxia miocárdica por broncoespasmo grave y bajo gasto cardíaco.
+      Edema laríngeo puede comprometer vía aérea.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+  - id: "PHYS_CARDIAC_ARREST_GRADE_IV"
+    state: "GRADE_IV"
+    description: >
+      Hipoxia miocárdica severa → fibrilación ventricular o asistolia.
+      Shock anafiláctico refractario → actividad eléctrica sin pulso.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "ACLS_AHA_2020"
+
+  - id: "PHYS_BIPHASIC"
+    state: "RESOLVING"
+    description: >
+      Riesgo de reacción bifásica: recurrencia de síntomas 1-72 h tras
+      resolución aparente sin nueva exposición al alérgeno.
+      Incidencia y factores de riesgo: PENDING_MEDICAL_REVIEW.
+    clinical_basis: "PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_ref: "WAO_2020"
+
+# =============================================================================
+# MEDICAMENTOS
+# =============================================================================
+
+medications:
+
+  epinephrine:
+    name: "Adrenalina (Epinefrina)"
+    drug_class: "Simpaticomimético — agonista α y β adrenérgico"
+    indication_in_scenario: "Primera línea en todo grado de anafilaxia"
+    doses:
+      IM:
+        value: "0.3-0.5 mg  # PENDING_MEDICAL_REVIEW"
+        unit: "mg"
+        concentration: "1:1000 (1 mg/mL)  # PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Muslo anterolateral externo. Repetir cada 5-15 min si no hay
+          respuesta. PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+      IV:
+        value: "0.1 mg en bolo lento  # PENDING_MEDICAL_REVIEW"
+        unit: "mg"
+        concentration: "1:10.000 (0.1 mg/mL) diluido  # PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Solo en colapso hemodinámico severo o paro cardíaco.
+          Bajo monitoreo ECG continuo. PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+      INFUSION_IV:
+        value: "0.1-1 mcg/kg/min  # PENDING_MEDICAL_REVIEW"
+        unit: "mcg/kg/min"
+        concentration: "PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Casos refractarios a bolos. Titular según respuesta hemodinámica.
+          PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    onset_description: "IM: 8-10 min (efecto máximo)  # PENDING_MEDICAL_REVIEW"
+    duration_description: "15-20 min por dosis IM  # PENDING_MEDICAL_REVIEW"
+    contraindications:
+      - description: "No existen contraindicaciones absolutas en anafilaxia con riesgo vital  # PENDING_MEDICAL_REVIEW"
+        severity: "relativa"
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    monitoring:
+      - "FC y ritmo cardíaco continuo"
+      - "Presión arterial cada 2-5 min"
+      - "Signos de isquemia miocárdica en ECG  # PENDING_MEDICAL_REVIEW"
+    notes: >
+      La adrenalina es el único tratamiento de primera línea reconocido.
+      No existe justificación para demorar su administración.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_refs:
+      - "WAO_2020"
+      - "NAP6_2018"
+
+  crystalloid_fluids:
+    name: "Suero fisiológico 0.9% (o Ringer lactato)"
+    drug_class: "Cristaloide isotónico"
+    indication_in_scenario: "Expansión de volumen en hipotensión anafiláctica"
+    doses:
+      IV_BOLUS:
+        value: "500-1000 mL  # PENDING_MEDICAL_REVIEW"
+        unit: "mL"
+        concentration: "0.9% NaCl"
+        administration_notes: >
+          Bolo rápido IV. Repetir según respuesta. Dosis total:
+          PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "NAP6_2018"
+    onset_description: "Efecto inmediato al completar bolo  # PENDING_MEDICAL_REVIEW"
+    duration_description: "Transitorio — redistribución en 30-60 min  # PENDING_MEDICAL_REVIEW"
+    contraindications: []
+    monitoring:
+      - "Presión arterial"
+      - "Diuresis"
+      - "Signos de sobrecarga de volumen  # PENDING_MEDICAL_REVIEW"
+    notes: "Complementario a la adrenalina, no la reemplaza. PENDING_MEDICAL_REVIEW."
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_refs:
+      - "NAP6_2018"
+
+  diphenhydramine:
+    name: "Difenhidramina"
+    drug_class: "Antihistamínico H1 de primera generación"
+    indication_in_scenario: "Segunda línea — manejo sintomático cutáneo"
+    doses:
+      IV:
+        value: "25-50 mg  # PENDING_MEDICAL_REVIEW"
+        unit: "mg"
+        concentration: "PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Administrar lentamente. NO usar como primera línea.
+          PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    onset_description: "15-30 min  # PENDING_MEDICAL_REVIEW"
+    duration_description: "4-6 horas  # PENDING_MEDICAL_REVIEW"
+    contraindications:
+      - description: "No usar como sustituto de adrenalina en grado II-IV"
+        severity: "absoluta"
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    monitoring:
+      - "No requiere monitoreo específico en dosis única"
+    notes: >
+      Los antihistamínicos alivian síntomas cutáneos pero NO revierten
+      hipotensión ni broncoespasmo. Son segunda línea. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_refs:
+      - "WAO_2020"
+
+  methylprednisolone:
+    name: "Metilprednisolona"
+    drug_class: "Glucocorticosteroide"
+    indication_in_scenario: "Prevención de reacción bifásica (segunda línea, efecto tardío)"
+    doses:
+      IV:
+        value: "1-2 mg/kg  # PENDING_MEDICAL_REVIEW"
+        unit: "mg/kg"
+        concentration: "PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Administrar tras estabilización. Inicio de acción tardío (horas).
+          PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    onset_description: "4-6 horas  # PENDING_MEDICAL_REVIEW"
+    duration_description: "12-24 horas  # PENDING_MEDICAL_REVIEW"
+    contraindications:
+      - description: "Uso como primera línea o sustituto de adrenalina"
+        severity: "absoluta"
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    monitoring:
+      - "Glucemia  # PENDING_MEDICAL_REVIEW"
+    notes: >
+      No tiene rol en el tratamiento agudo de la anafilaxia.
+      El beneficio en reacción bifásica es debatido.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_refs:
+      - "WAO_2020"
+
+  glucagon:
+    name: "Glucagón"
+    drug_class: "Hormona glucogenolítica"
+    indication_in_scenario: "Anafilaxia refractaria en pacientes con betabloqueantes"
+    doses:
+      IV:
+        value: "1-5 mg IV lento  # PENDING_MEDICAL_REVIEW"
+        unit: "mg"
+        concentration: "PENDING_MEDICAL_REVIEW"
+        administration_notes: >
+          Solo en pacientes que no responden a adrenalina por estar en
+          tratamiento crónico con betabloqueantes. PENDING_MEDICAL_REVIEW.
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    onset_description: "PENDING_MEDICAL_REVIEW"
+    duration_description: "PENDING_MEDICAL_REVIEW"
+    contraindications:
+      - description: "Feocromocitoma  # PENDING_MEDICAL_REVIEW"
+        severity: "absoluta"
+        validation_status: "PENDING_MEDICAL_REVIEW"
+        source_ref: "WAO_2020"
+    monitoring:
+      - "Glucemia"
+      - "Presión arterial"
+    notes: >
+      Este paciente NO está en betabloqueantes, por lo que el glucagón
+      no aplica en este escenario. Incluido por completitud educativa.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+    source_refs:
+      - "WAO_2020"
+
+# =============================================================================
+# DESENLACES
+# =============================================================================
+
+outcomes:
+
+  OUTCOME_FULL_RECOVERY:
+    id: "OUTCOME_FULL_RECOVERY"
+    label: "Recuperación completa"
+    description: >
+      El paciente se recupera sin complicaciones mayores. Signos vitales
+      retornan a valores basales. Alta de quirófano a sala de recuperación.
+    trigger_condition: >
+      Reconocimiento precoz (< 3 min) + adrenalina (< 5 min desde signos) +
+      suspensión del agente. PENDING_MEDICAL_REVIEW.
+    educational_message: >
+      El tratamiento oportuno con adrenalina y la suspensión inmediata
+      del agente desencadenante fueron determinantes. La identificación
+      precoz es la habilidad más crítica en anafilaxia perioperatoria.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  OUTCOME_CARDIAC_ARREST_WITH_RECOVERY:
+    id: "OUTCOME_CARDIAC_ARREST_WITH_RECOVERY"
+    label: "Paro cardiorrespiratorio con recuperación (ROSC)"
+    description: >
+      El paciente sufre paro cardiorrespiratorio secundario a anafilaxia
+      no tratada a tiempo, pero es reanimado exitosamente con RCP y
+      adrenalina en dosis de paro. Puede presentar secuelas.
+    trigger_condition: >
+      Tratamiento tardío o insuficiente hasta grado IV + RCP efectiva
+      con ROSC. PENDING_MEDICAL_REVIEW.
+    educational_message: >
+      La RCP oportuna evitó el fallecimiento, pero el daño hipóxico
+      puede generar secuelas neurológicas o miocárdicas. Un tratamiento
+      más temprano habría evitado el paro. PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  OUTCOME_DEATH:
+    id: "OUTCOME_DEATH"
+    label: "Fallecimiento"
+    description: >
+      El paciente fallece por anafilaxia perioperatoria no tratada
+      adecuadamente. Paro cardiorrespiratorio sin RCP o refractario.
+    trigger_condition: >
+      Ausencia de tratamiento en grado IV, o tratamiento radicalmente
+      inadecuado, sin RCP o RCP fallida. PENDING_MEDICAL_REVIEW.
+    educational_message: >
+      La anafilaxia perioperatoria no tratada en el tiempo requerido
+      es potencialmente fatal. La adrenalina es el único tratamiento
+      de primera línea reconocido. No existe justificación para demorar
+      su administración ante signos claros de anafilaxia.
+      PENDING_MEDICAL_REVIEW.
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# CRITERIOS DE PUNTUACIÓN
+# =============================================================================
+
+scoring_criteria:
+
+  - id: "SCORE_RECOGNITION"
+    label: "Reconocimiento"
+    max_points: 20
+    criteria_description:
+      - "20 pts: reconocimiento en < 2 min desde primeros signos  # PENDING_MEDICAL_REVIEW"
+      - "10 pts: reconocimiento entre 2-5 min  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: reconocimiento después de 5 min  # PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "SCORE_EPINEPHRINE"
+    label: "Administración de adrenalina"
+    max_points: 30
+    criteria_description:
+      - "30 pts: adrenalina correcta en < 5 min desde diagnóstico  # PENDING_MEDICAL_REVIEW"
+      - "20 pts: adrenalina correcta en 5-10 min  # PENDING_MEDICAL_REVIEW"
+      - "10 pts: adrenalina con dosis incorrecta o vía incorrecta  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: antihistamínico o corticosteroide como primera línea  # PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "SCORE_TRIGGER_STOP"
+    label: "Suspensión del agente desencadenante"
+    max_points: 15
+    criteria_description:
+      - "15 pts: suspensión en < 2 min desde diagnóstico  # PENDING_MEDICAL_REVIEW"
+      - "5 pts: suspensión tardía  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: no se suspende el agente  # PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "SCORE_TEAM_ACTIVATION"
+    label: "Activación del equipo"
+    max_points: 10
+    criteria_description:
+      - "10 pts: código azul activado en < 3 min  # PENDING_MEDICAL_REVIEW"
+      - "5 pts: activado entre 3-8 min  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: no se activa el equipo  # PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "SCORE_HEMODYNAMIC"
+    label: "Manejo hemodinámico"
+    max_points: 15
+    criteria_description:
+      - "15 pts: fluidos y posición Trendelenburg oportunos  # PENDING_MEDICAL_REVIEW"
+      - "5 pts: solo una de las dos intervenciones  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: ninguna intervención hemodinámica  # PENDING_MEDICAL_REVIEW"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "SCORE_CPR"
+    label: "RCP (si aplica)"
+    max_points: 10
+    criteria_description:
+      - "10 pts: RCP iniciada en < 1 min tras diagnóstico de paro  # PENDING_MEDICAL_REVIEW"
+      - "5 pts: RCP iniciada entre 1-3 min  # PENDING_MEDICAL_REVIEW"
+      - "0 pts: RCP no iniciada o > 3 min  # PENDING_MEDICAL_REVIEW"
+      - "N/A: si el escenario no llega a paro cardíaco"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# ESTRUCTURA DEL DEBRIEFING
+# =============================================================================
+
+debriefing_structure:
+
+  - id: "DEBRIEF_FEELINGS"
+    question: "¿Cómo se sintió durante el escenario? ¿Hubo algún momento de duda?"
+    key_teaching: >
+      El estrés en emergencias afecta la toma de decisiones. Identificar
+      los momentos de duda ayuda a anticipar errores futuros.
+    source_ref: null
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_RECOGNITION"
+    question: "¿Cuándo reconoció la reacción y qué la hizo sospechar?"
+    key_teaching: >
+      La tríada clásica de anafilaxia: signos cutáneos + hipotensión +
+      broncoespasmo. En perioperatorio, los signos cutáneos pueden ser
+      la única pista inicial. PENDING_MEDICAL_REVIEW.
+    source_ref: "WAO_2020"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_FIRST_DRUG"
+    question: "¿Cuál fue el primer medicamento que eligió y por qué?"
+    key_teaching: >
+      La adrenalina es la única primera línea. Los antihistamínicos y
+      corticosteroides son coadyuvantes tardíos. PENDING_MEDICAL_REVIEW.
+    source_ref: "WAO_2020"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_TRIGGER"
+    question: "¿Identificó el agente causal y lo suspendió? ¿Cuándo?"
+    key_teaching: >
+      Suspender la exposición al alérgeno es simultánea —no posterior—
+      a la adrenalina. No retrasa el tratamiento. PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_TEAM"
+    question: "¿Cómo coordinó al equipo? ¿Comunicó claramente el problema?"
+    key_teaching: >
+      El trabajo en equipo y la comunicación estructurada reducen errores
+      en emergencias. Un solo profesional no puede manejar solo una
+      anafilaxia grave. PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_PREVENTION"
+    question: "¿Qué medidas habría adoptado en la consulta preanestésica para prevenir este evento?"
+    key_teaching: >
+      Interrogatorio sistemático de alergias, factores de riesgo de
+      sensibilización a látex (espina bífida, múltiples cirugías),
+      y protocolo de ambiente libre de látex. PENDING_MEDICAL_REVIEW.
+    source_ref: "NAP6_2018"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  - id: "DEBRIEF_BIPHASIC"
+    question: "¿Qué vigilancia requiere el paciente en las próximas horas?"
+    key_teaching: >
+      Riesgo de reacción bifásica: monitorización en UCI o área de
+      cuidados intermedios por al menos 12-24 horas.
+      Plazo exacto: PENDING_MEDICAL_REVIEW.
+    source_ref: "WAO_2020"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# REFERENCIAS CLÍNICAS
+# =============================================================================
+
+references:
+
+  NAP6_2018:
+    title: "Sixth National Audit Project — Perioperative Anaphylaxis"
+    version: "2018"
+    year: 2018
+    url: "https://www.rcoa.ac.uk/nap6"
+    doi: null
+    access_date: null
+    validated_by: null
+    validation_date: null
+
+  WAO_2020:
+    title: "World Allergy Organization Anaphylaxis Guidance"
+    version: "2020"
+    year: 2020
+    url: "https://www.worldallergy.org/education-and-programs/education/allergic-disease-resource-center/professionals/anaphylaxis-in-schools-and-other-settings"
+    doi: null
+    access_date: null
+    validated_by: null
+    validation_date: null
+
+  ACLS_AHA_2020:
+    title: "American Heart Association ACLS Guidelines"
+    version: "2020"
+    year: 2020
+    url: "https://cpr.heart.org/en/resources/cpr-and-ecc-guidelines"
+    doi: null
+    access_date: null
+    validated_by: null
+    validation_date: null
+
+# =============================================================================
+# LOG DE VALIDACIÓN
+# =============================================================================
+
+validation_log:
+  overall_status: "PENDING_MEDICAL_REVIEW"
+  reviewer: null
+  reviewer_institution: null
+  review_date: null
+  comments: >
+    Este escenario requiere revisión por médico anestesiólogo certificado
+    antes de su uso en formación formal. Todos los valores numéricos
+    (dosis, tiempos, criterios fisiológicos) deben ser verificados
+    contra guías clínicas vigentes al momento de la revisión.
+  pending_items:
+    - "Verificar dosis exactas de adrenalina IM e IV por vía con guía WAO vigente"
+    - "Confirmar tiempos umbral de transición entre grados clínicos"
+    - "Validar criterios diagnósticos de cada grado"
+    - "Revisar incidencia y factores de riesgo de reacción bifásica"
+    - "Confirmar duración de observación post-evento"
+    - "Validar criterios de puntuación educativa con experto en simulación"
+    - "Completar access_date en todas las referencias"
+    - "Confirmar disponibilidad de glucagón en el ámbito quirúrgico local"

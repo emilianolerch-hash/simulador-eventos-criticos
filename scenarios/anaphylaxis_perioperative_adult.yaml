@@ -1,0 +1,410 @@
+# =============================================================================
+# ESCENARIO: Anafilaxia Perioperatoria — Paciente Adulto
+#
+# ADVERTENCIA: Todos los valores numéricos (dosis, tiempos, deltas fisiológicos)
+# están marcados como PENDING_MEDICAL_REVIEW y son ficticios/provisionales.
+# NO usar como referencia clínica real.
+# =============================================================================
+
+id: "anaphylaxis_perioperative_adult_v1"
+title: "Anafilaxia Perioperatoria — Paciente Adulto"
+version: "0.1.0-draft"
+language: "es"
+educational_disclaimer: true
+target_audience: "anesthesiologist"
+initial_state_id: "INITIAL_PRESENTATION"
+
+patient:
+  age: 42
+  weight_kg: 75.0
+  sex: "male"
+  asa_class: "II"
+  context: "Inducción anestésica para colecistectomía laparoscópica electiva. Sin alergias conocidas previas."
+
+initial_vitals:
+  hr: 78.0
+  sbp: 125.0
+  dbp: 80.0
+  spo2: 99.0
+  rr: 14.0
+  etco2: 38.0
+  temperature: 36.5
+
+# =============================================================================
+# ESTADOS
+# =============================================================================
+
+states:
+
+  INITIAL_PRESENTATION:
+    description: "Paciente intubado, ventilado. Se coloca látex en campo quirúrgico. Sin signos clínicos aún."
+    is_terminal: false
+    available_action_ids: []
+    auto_advance_to: "GRADE_I"
+    auto_advance_after_seconds: 30.0   # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  GRADE_I:
+    description: "Reacción cutánea: urticaria generalizada, rubor facial, prurito. Sin compromiso hemodinámico ni respiratorio."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW — valores ficticios
+      hr: 0.15
+      sbp: -0.08
+      spo2: -0.02
+    available_action_ids:
+      - "STOP_TRIGGER"
+      - "CALL_FOR_HELP"
+      - "ADMINISTER_O2_100"
+      - "ADMINISTER_ANTIHISTAMINE_IV"
+      - "ADMINISTER_EPINEPHRINE_IM"
+    auto_advance_to: "GRADE_II"
+    auto_advance_after_seconds: 90.0   # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  GRADE_II:
+    description: "Hipotensión leve (PAS < 90 mmHg), taquicardia sinusal, broncoespasmo incipiente, angioedema."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW
+      hr: 0.3
+      sbp: -0.5
+      dbp: -0.3
+      spo2: -0.12
+      rr: 0.08
+    available_action_ids:
+      - "STOP_TRIGGER"
+      - "CALL_FOR_HELP"
+      - "ADMINISTER_O2_100"
+      - "ADMINISTER_EPINEPHRINE_IM"
+      - "ADMINISTER_EPINEPHRINE_IV"
+      - "ADMINISTER_FLUIDS_IV"
+      - "POSITION_TRENDELENBURG"
+    auto_advance_to: "GRADE_III"
+    auto_advance_after_seconds: 180.0  # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  GRADE_III:
+    description: "Colapso cardiovascular, broncoespasmo severo, pérdida de consciencia inminente. PAS < 50 mmHg."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW
+      hr: 0.4
+      sbp: -1.2
+      dbp: -0.6
+      spo2: -0.35
+      rr: 0.15
+      etco2: -0.25
+    available_action_ids:
+      - "CALL_FOR_HELP"
+      - "ADMINISTER_O2_100"
+      - "ADMINISTER_EPINEPHRINE_IV"
+      - "ADMINISTER_FLUIDS_IV"
+      - "VENTILATE_MANUALLY"
+    auto_advance_to: "GRADE_IV"
+    auto_advance_after_seconds: 120.0  # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  GRADE_IV:
+    description: "Paro cardiorrespiratorio. Sin pulso central. Monitor: asistolia o actividad eléctrica sin pulso."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW
+      hr: -0.5
+      sbp: -0.8
+      spo2: -0.4
+    available_action_ids:
+      - "START_CPR"
+      - "ADMINISTER_EPINEPHRINE_CPR"
+      - "ADMINISTER_O2_100"
+      - "VENTILATE_MANUALLY"
+    auto_advance_to: "OUTCOME_DEATH"
+    auto_advance_after_seconds: 180.0  # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  RESOLVING:
+    description: "El paciente responde al tratamiento. Signos vitales mejorando progresivamente. Monitorización estrecha."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW
+      hr: -0.05
+      sbp: 0.12
+      dbp: 0.06
+      spo2: 0.05
+    available_action_ids:
+      - "MONITOR_VITALS"
+      - "ADMINISTER_CORTICOSTEROID"
+      - "ADMINISTER_ANTIHISTAMINE_IV"
+      - "ADMINISTER_O2_100"
+    auto_advance_to: "OUTCOME_FULL_RECOVERY"
+    auto_advance_after_seconds: 300.0  # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  RESOLVING_AFTER_CPR:
+    description: "Retorno de la circulación espontánea (ROSC) tras RCP. Monitorización post-paro iniciada."
+    is_terminal: false
+    vitals_delta_per_second:           # PENDING_MEDICAL_REVIEW
+      hr: 0.04
+      sbp: 0.18
+      spo2: 0.08
+    available_action_ids:
+      - "MONITOR_VITALS"
+      - "ADMINISTER_EPINEPHRINE_IV"
+      - "ADMINISTER_CORTICOSTEROID"
+      - "ADMINISTER_O2_100"
+    auto_advance_to: "OUTCOME_CARDIAC_ARREST_WITH_RECOVERY"
+    auto_advance_after_seconds: 300.0  # PENDING_MEDICAL_REVIEW
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  OUTCOME_FULL_RECOVERY:
+    description: "Paciente estable. Recuperación completa sin complicaciones aparentes."
+    is_terminal: true
+    outcome_id: "OUTCOME_FULL_RECOVERY"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  OUTCOME_CARDIAC_ARREST_WITH_RECOVERY:
+    description: "El paciente sufrió paro cardiorrespiratorio y fue reanimado exitosamente con RCP."
+    is_terminal: true
+    outcome_id: "OUTCOME_CARDIAC_ARREST_WITH_RECOVERY"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+  OUTCOME_DEATH:
+    description: "El paciente falleció por anafilaxia perioperatoria no tratada oportunamente."
+    is_terminal: true
+    outcome_id: "OUTCOME_DEATH"
+    validation_status: "PENDING_MEDICAL_REVIEW"
+
+# =============================================================================
+# ACCIONES
+# category: communication | trigger | oxygen | medication | fluid | procedure
+# =============================================================================
+
+actions:
+
+  STOP_TRIGGER:
+    label: "Suspender agente desencadenante"
+    description: "Detener exposición al látex u otro agente sospechoso. Avisar al cirujano."
+    category: "trigger"
+    effect:
+      vitals_delta_once:
+        hr: -2.0      # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "NAP6_2018"
+
+  CALL_FOR_HELP:
+    label: "Llamar ayuda / Activar código azul"
+    description: "Solicitar asistencia urgente del equipo de reanimación."
+    category: "communication"
+    effect:
+      vitals_delta_once: null
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+
+  ADMINISTER_O2_100:
+    label: "Oxígeno 100% (FiO₂ 1.0)"
+    description: "Aumentar FiO₂ a 1.0 en el ventilador. Medida inmediata ante reacción."
+    category: "oxygen"
+    effect:
+      vitals_delta_once:
+        spo2: 2.0     # PENDING_MEDICAL_REVIEW
+        etco2: 1.0    # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "NAP6_2018"
+
+  ADMINISTER_ANTIHISTAMINE_IV:
+    label: "Difenhidramina 50 mg IV"     # PENDING_MEDICAL_REVIEW — dosis ficticia
+    description: "Antihistamínico IV para manejo sintomático cutáneo."
+    category: "medication"
+    effect:
+      vitals_delta_once:
+        hr: -3.0      # PENDING_MEDICAL_REVIEW
+        spo2: 0.5     # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "NAP6_2018"
+      notes: "No es primera línea. No reemplaza adrenalina."
+
+  ADMINISTER_EPINEPHRINE_IM:
+    label: "Adrenalina IM 0.3 mg (muslo lateral)"   # PENDING_MEDICAL_REVIEW
+    description: "Epinefrina intramuscular. Primera línea en anafilaxia. Administrar sin demora."
+    category: "medication"
+    effect:
+      vitals_delta_once:
+        hr: 15.0      # PENDING_MEDICAL_REVIEW
+        sbp: 28.0     # PENDING_MEDICAL_REVIEW
+        dbp: 12.0     # PENDING_MEDICAL_REVIEW
+        spo2: 2.5     # PENDING_MEDICAL_REVIEW
+      transitions_to: "RESOLVING"
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "WAO_ANAPHYLAXIS_2020"
+
+  ADMINISTER_EPINEPHRINE_IV:
+    label: "Adrenalina IV 0.1 mg bolo lento"   # PENDING_MEDICAL_REVIEW
+    description: "Epinefrina IV para colapso hemodinámico severo. Requiere monitorización continua."
+    category: "medication"
+    effect:
+      vitals_delta_once:
+        hr: 22.0      # PENDING_MEDICAL_REVIEW
+        sbp: 45.0     # PENDING_MEDICAL_REVIEW
+        dbp: 18.0     # PENDING_MEDICAL_REVIEW
+        spo2: 3.0     # PENDING_MEDICAL_REVIEW
+      transitions_to: "RESOLVING"
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "WAO_ANAPHYLAXIS_2020"
+
+  ADMINISTER_FLUIDS_IV:
+    label: "Solución salina 500 mL IV rápido"   # PENDING_MEDICAL_REVIEW
+    description: "Expansión de volumen para hipotensión distributiva."
+    category: "fluid"
+    effect:
+      vitals_delta_once:
+        hr: -5.0      # PENDING_MEDICAL_REVIEW
+        sbp: 18.0     # PENDING_MEDICAL_REVIEW
+        dbp: 10.0     # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "NAP6_2018"
+
+  POSITION_TRENDELENBURG:
+    label: "Posición Trendelenburg (MMII elevados)"
+    description: "Elevar miembros inferiores para mejorar retorno venoso."
+    category: "procedure"
+    effect:
+      vitals_delta_once:
+        sbp: 6.0      # PENDING_MEDICAL_REVIEW
+        dbp: 4.0      # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+
+  VENTILATE_MANUALLY:
+    label: "Ventilación manual con máscara y bolsa"
+    description: "Ventilación asistida manual para mantener oxigenación."
+    category: "procedure"
+    effect:
+      vitals_delta_once:
+        spo2: 4.0     # PENDING_MEDICAL_REVIEW
+        etco2: 2.0    # PENDING_MEDICAL_REVIEW
+        rr: -2.0      # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+
+  START_CPR:
+    label: "Iniciar RCP (compresiones + ventilación)"
+    description: "Reanimación cardiopulmonar avanzada. 30:2 o continua con vía aérea asegurada."
+    category: "procedure"
+    effect:
+      vitals_delta_once:
+        hr: 55.0      # PENDING_MEDICAL_REVIEW — simula pulsaciones inducidas por compresiones
+        sbp: 45.0     # PENDING_MEDICAL_REVIEW
+        spo2: 6.0     # PENDING_MEDICAL_REVIEW
+      transitions_to: "RESOLVING_AFTER_CPR"
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "ACLS_AHA_2020"
+
+  ADMINISTER_EPINEPHRINE_CPR:
+    label: "Adrenalina 1 mg IV durante RCP"   # PENDING_MEDICAL_REVIEW
+    description: "Dosis de epinefrina en paro cardíaco según protocolo ACLS."
+    category: "medication"
+    effect:
+      vitals_delta_once:
+        hr: 10.0      # PENDING_MEDICAL_REVIEW
+        sbp: 22.0     # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "ACLS_AHA_2020"
+
+  MONITOR_VITALS:
+    label: "Monitorizar signos vitales"
+    description: "Observar evolución de parámetros hemodinámicos. Sin intervención activa."
+    category: "procedure"
+    effect:
+      vitals_delta_once: null
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+
+  ADMINISTER_CORTICOSTEROID:
+    label: "Metilprednisolona 1 mg/kg IV"   # PENDING_MEDICAL_REVIEW
+    description: "Corticosteroide para prevención de reacción bifásica. Efecto tardío."
+    category: "medication"
+    effect:
+      vitals_delta_once:
+        hr: -1.5      # PENDING_MEDICAL_REVIEW
+      transitions_to: null
+      validation_status: "PENDING_MEDICAL_REVIEW"
+      source_ref: "WAO_ANAPHYLAXIS_2020"
+      notes: "Inicio de acción tardío (horas). No tiene rol en fase aguda."
+
+# =============================================================================
+# DESENLACES
+# =============================================================================
+
+outcomes:
+
+  OUTCOME_FULL_RECOVERY:
+    label: "Recuperación completa"
+    description: "El paciente se recuperó sin complicaciones mayores."
+    educational_message: >
+      El tratamiento oportuno con adrenalina y la suspensión inmediata
+      del agente desencadenante fueron determinantes. La identificación
+      precoz de la anafilaxia es la habilidad más crítica.
+      PENDING_MEDICAL_REVIEW.
+
+  OUTCOME_CARDIAC_ARREST_WITH_RECOVERY:
+    label: "Paro cardiorrespiratorio con recuperación"
+    description: "El paciente sufrió paro cardiorrespiratorio y fue reanimado exitosamente."
+    educational_message: >
+      La RCP oportuna evitó el fallecimiento, pero el daño hipóxico puede
+      generar secuelas. Un tratamiento más temprano habría evitado el paro.
+      PENDING_MEDICAL_REVIEW.
+
+  OUTCOME_DEATH:
+    label: "Fallecimiento"
+    description: "El paciente falleció por anafilaxia perioperatoria."
+    educational_message: >
+      La anafilaxia perioperatoria no tratada en el tiempo requerido es
+      potencialmente fatal. La adrenalina es el único tratamiento de primera
+      línea reconocido. No existe justificación para demorar su administración.
+      PENDING_MEDICAL_REVIEW.
+
+# =============================================================================
+# FUENTES CLÍNICAS
+# =============================================================================
+
+clinical_sources:
+
+  NAP6_2018:
+    title: "Sixth National Audit Project — Perioperative Anaphylaxis"
+    version: "2018"
+    year: 2018
+    url: "https://www.rcoa.ac.uk/nap6"
+    review_date: null
+    validated_by: null
+
+  WAO_ANAPHYLAXIS_2020:
+    title: "World Allergy Organization Anaphylaxis Guidance"
+    version: "2020"
+    year: 2020
+    url: "https://www.worldallergy.org/education-and-programs/education/allergic-disease-resource-center/professionals/anaphylaxis-in-schools-and-other-settings"
+    review_date: null
+    validated_by: null
+
+  ACLS_AHA_2020:
+    title: "American Heart Association ACLS Guidelines"
+    version: "2020"
+    year: 2020
+    url: "https://cpr.heart.org/en/resources/cpr-and-ecc-guidelines"
+    review_date: null
+    validated_by: null
+
+# =============================================================================
+# SECCIONES DE DEBRIEFING
+# =============================================================================
+
+debriefing_sections:
+  - id: "timeline_review"
+    title: "Revisión cronológica"
+  - id: "correct_actions"
+    title: "Acciones correctas"
+  - id: "missed_actions"
+    title: "Acciones omitidas o tardías"
+  - id: "protocol_comparison"
+    title: "Comparación con protocolo de referencia"
+  - id: "clinical_sources"
+    title: "Fuentes clínicas"
