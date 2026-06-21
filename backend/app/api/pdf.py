@@ -21,6 +21,17 @@ _DISCLAIMER = (
 )
 
 
+_UNICODE_SUBS = str.maketrans(
+    "₀₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹",
+    "01234567890123456789",
+)
+
+
+def _s(text: str) -> str:
+    """Replace Unicode sub/superscripts with ASCII equivalents for reportlab."""
+    return text.translate(_UNICODE_SUBS) if text else text
+
+
 def _fmt_time(s: float) -> str:
     m = int(s // 60)
     sec = int(s % 60)
@@ -87,11 +98,11 @@ def _build_pdf(debrief: dict) -> bytes:
     # Outcome
     story.append(Paragraph("Desenlace", h2_style))
     story.append(Paragraph(
-        f"<b>{debrief.get('outcome_label', '—')}</b>: {debrief.get('outcome_description', '')}",
+        f"<b>{_s(debrief.get('outcome_label', '—'))}</b>: {_s(debrief.get('outcome_description', ''))}",
         body_style,
     ))
     story.append(Spacer(1, 0.2 * cm))
-    story.append(Paragraph(debrief.get("educational_message", ""), body_style))
+    story.append(Paragraph(_s(debrief.get("educational_message", "")), body_style))
     story.append(Spacer(1, 0.3 * cm))
 
     # Stats table
@@ -117,7 +128,7 @@ def _build_pdf(debrief: dict) -> bytes:
     correct = sections.get("correct_actions", [])
     if correct:
         for a in correct:
-            story.append(Paragraph(f"✓ {a}", body_style))
+            story.append(Paragraph(f"✓ {_s(a)}", body_style))
     else:
         story.append(Paragraph("Ninguna acción clave fue realizada.", small_style))
     story.append(Spacer(1, 0.2 * cm))
@@ -127,7 +138,7 @@ def _build_pdf(debrief: dict) -> bytes:
     missed = sections.get("missed_actions", [])
     if missed:
         for a in missed:
-            story.append(Paragraph(f"✗ {a}", body_style))
+            story.append(Paragraph(f"✗ {_s(a)}", body_style))
     else:
         story.append(Paragraph("No hubo acciones omitidas.", small_style))
     story.append(Spacer(1, 0.2 * cm))
@@ -140,7 +151,7 @@ def _build_pdf(debrief: dict) -> bytes:
         for entry in timeline:
             tl_data.append([
                 _fmt_time(entry.get("t", 0)),
-                entry.get("action", ""),
+                _s(entry.get("action", "")),
                 entry.get("state_before", ""),
                 entry.get("state_after", ""),
             ])
