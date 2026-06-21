@@ -29,6 +29,7 @@ services:
       JWT_EXPIRE_MINUTES: "${JWT_EXPIRE_MINUTES:-480}"
       CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:3000}"
       ENV: "${ENV:-production}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
       RATE_LIMIT_LOGIN: "${RATE_LIMIT_LOGIN:-10}"
       RATE_LIMIT_REGISTER: "${RATE_LIMIT_REGISTER:-5}"
     depends_on:
