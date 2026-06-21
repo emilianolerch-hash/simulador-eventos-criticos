@@ -19,9 +19,15 @@ frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/.turbo/
+frontend/README.md
+frontend/public/
+
+# Duplicado del pyproject.toml raíz
+backend/pyproject.toml
 
 # macOS
 .DS_Store
+*.icloud
 
 # Editor
 .vscode/
