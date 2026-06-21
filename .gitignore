@@ -12,6 +12,7 @@ venv/
 # Env / secrets
 backend/.env
 .env
+.env.docker
 
 # Node
 frontend/node_modules/

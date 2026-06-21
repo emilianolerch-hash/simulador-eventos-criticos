@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import type { SessionState, ScenarioDetail } from '@/lib/types';
 import { ActionModal } from './ActionModal';
+import { LIVE_INTERVAL_OPTIONS, type LiveInterval } from '@/hooks/useSimulation';
 
 interface Props {
   session: SessionState | null;
@@ -9,6 +10,10 @@ interface Props {
   onAction: (id: string) => void;
   onAdvanceTime: (s: number) => void;
   loading: boolean;
+  isLive: boolean;
+  liveInterval: LiveInterval;
+  onSetLiveInterval: (i: LiveInterval) => void;
+  onToggleLive: () => void;
 }
 
 type ModalType = 'medication' | 'procedure' | null;
@@ -46,7 +51,10 @@ function Btn({
   );
 }
 
-export function ActionPanel({ session, scenario, onAction, onAdvanceTime, loading }: Props) {
+export function ActionPanel({
+  session, scenario, onAction, onAdvanceTime, loading,
+  isLive, liveInterval, onSetLiveInterval, onToggleLive,
+}: Props) {
   const [modal, setModal] = useState<ModalType>(null);
 
   if (!session || !scenario) return null;
@@ -63,6 +71,8 @@ export function ActionPanel({ session, scenario, onAction, onAdvanceTime, loadin
     setModal(null);
     onAction(id);
   };
+
+  const isTerminal = session.is_terminal;
 
   return (
     <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 space-y-3">
@@ -124,14 +134,72 @@ export function ActionPanel({ session, scenario, onAction, onAdvanceTime, loadin
         />
       </div>
 
-      {/* Row 4: Advance time */}
-      <Btn
-        label="⏩ Avanzar tiempo  +15 s"
-        variant="slate"
-        enabled={!session.is_terminal}
-        loading={loading}
-        onClick={() => onAdvanceTime(15)}
-      />
+      {/* Row 4: Time controls */}
+      <div className="space-y-2">
+        {/* Manual advance — always visible, disabled in live mode to avoid confusion */}
+        <Btn
+          label="⏩ Avanzar tiempo  +15 s"
+          variant="slate"
+          enabled={!isTerminal && !isLive}
+          loading={loading}
+          onClick={() => onAdvanceTime(15)}
+        />
+
+        {/* Live mode panel */}
+        <div className={`rounded-lg border p-3 space-y-2 transition-colors ${
+          isLive ? 'border-green-600 bg-green-950/30' : 'border-slate-700 bg-slate-900'
+        }`}>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              {isLive && (
+                <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              )}
+              Modo live
+            </span>
+            {!isTerminal && (
+              <button
+                onClick={onToggleLive}
+                className={`text-xs font-bold px-3 py-1 rounded-md transition-colors ${
+                  isLive
+                    ? 'bg-red-700 hover:bg-red-600 text-white'
+                    : 'bg-green-700 hover:bg-green-600 text-white'
+                }`}
+              >
+                {isLive ? 'Detener' : 'Iniciar'}
+              </button>
+            )}
+          </div>
+
+          {/* Interval selector — hidden while live */}
+          {!isLive && !isTerminal && (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-500 shrink-0">Intervalo:</span>
+              <div className="flex gap-1">
+                {LIVE_INTERVAL_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => onSetLiveInterval(opt)}
+                    className={`text-[10px] px-2 py-1 rounded transition-colors ${
+                      liveInterval === opt
+                        ? 'bg-slate-500 text-white'
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    }`}
+                  >
+                    {opt}s
+                  </button>
+                ))}
+              </div>
+              <span className="text-[10px] text-slate-600">→ +15 s sim</span>
+            </div>
+          )}
+
+          {isLive && (
+            <p className="text-[10px] text-green-400">
+              Avanzando +15 s simulados cada {liveInterval} s reales
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Effect feedback */}
       {session.effect_summary && (

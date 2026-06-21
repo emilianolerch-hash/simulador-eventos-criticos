@@ -17,7 +17,8 @@ export default function Home() {
   const {
     view, session, scenario, debrief, log,
     loading, error,
-    start, applyAction, advanceTime, restart, clearError,
+    isLive, liveInterval, setLiveInterval,
+    start, applyAction, advanceTime, toggleLive, restart, clearError,
   } = useSimulation();
 
   const { user, error: authError, login, register, logout } = useAuth();
@@ -115,8 +116,14 @@ export default function Home() {
 
       {/* Title bar */}
       <div className="px-4 py-2 flex items-center justify-between border-b border-slate-800">
-        <span className="text-xs font-semibold text-slate-400">
+        <span className="text-xs font-semibold text-slate-400 flex items-center gap-2">
           Anafilaxia Perioperatoria
+          {isLive && (
+            <span className="inline-flex items-center gap-1 text-green-400 font-bold">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              LIVE
+            </span>
+          )}
         </span>
         <div className="flex items-center gap-3">
           {loading && (
@@ -153,6 +160,10 @@ export default function Home() {
               onAction={applyAction}
               onAdvanceTime={advanceTime}
               loading={loading}
+              isLive={isLive}
+              liveInterval={liveInterval}
+              onSetLiveInterval={setLiveInterval}
+              onToggleLive={toggleLive}
             />
           </div>
 

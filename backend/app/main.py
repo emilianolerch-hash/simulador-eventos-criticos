@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from .auth.deps import get_current_user_optional
 from .auth.router import router as auth_router
 from .api.validation import router as validation_router
+from .config import settings
 from .database import Base, engine, get_db
 from .engine.action_processor import ActionNotAvailableError, ActionProcessor
 from .engine.outcome_evaluator import OutcomeEvaluator
@@ -43,7 +44,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=settings.cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

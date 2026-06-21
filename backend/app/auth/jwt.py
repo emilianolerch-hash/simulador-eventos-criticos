@@ -1,12 +1,9 @@
-import os
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
-from jose import JWTError, jwt
+from jose import jwt
 
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-secret-change-in-prod")
-ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
-EXPIRE_MINUTES = int(os.environ.get("JWT_EXPIRE_MINUTES", "480"))
+from app.config import settings
 
 
 def hash_password(plain: str) -> str:
@@ -18,13 +15,13 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(user_id: str, role: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expire_minutes)
     return jwt.encode(
         {"sub": user_id, "role": role, "exp": expire},
-        SECRET_KEY,
-        algorithm=ALGORITHM,
+        settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
     )
 
 
 def decode_token(token: str) -> dict:
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])

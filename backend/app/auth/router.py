@@ -1,16 +1,19 @@
 """Auth endpoints: register, login, me."""
-from typing import Optional
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 from app.auth.deps import get_current_user
 from app.auth.jwt import create_access_token, hash_password, verify_password
+from app.config import settings
 from app.database import get_db
+from app.middleware.rate_limit import make_limiter
 from app.models.db_models import User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+_login_limiter = make_limiter(settings.rate_limit_login)
+_register_limiter = make_limiter(settings.rate_limit_register)
 
 
 class RegisterRequest(BaseModel):
@@ -39,7 +42,12 @@ class TokenOut(BaseModel):
 
 
 @router.post("/register", response_model=TokenOut, status_code=201)
-def register(body: RegisterRequest, db: Session = Depends(get_db)):
+def register(
+    request: Request,
+    body: RegisterRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(_register_limiter),
+):
     if body.role not in ("anesthesiologist", "validator"):
         raise HTTPException(400, "role debe ser 'anesthesiologist' o 'validator'")
     existing = db.query(User).filter(User.email == body.email).first()
@@ -62,7 +70,12 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenOut)
-def login(body: LoginRequest, db: Session = Depends(get_db)):
+def login(
+    request: Request,
+    body: LoginRequest,
+    db: Session = Depends(get_db),
+    _: None = Depends(_login_limiter),
+):
     user = db.query(User).filter(User.email == body.email).first()
     if not user or not verify_password(body.password, user.password_hash):
         raise HTTPException(401, "Credenciales incorrectas")
