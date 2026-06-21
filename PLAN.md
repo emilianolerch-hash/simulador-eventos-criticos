@@ -101,12 +101,12 @@ simulador-eventos-criticos/
 ### Etapa 0 — Andamiaje (sin lógica clínica)
 **Objetivo:** repositorio arriba, dependencias instaladas, CI básica.
 
-- [ ] Inicializar proyecto Next.js con TypeScript y Tailwind
-- [ ] Inicializar proyecto FastAPI con Pydantic y uvicorn
-- [ ] Crear `pyproject.toml` y `requirements.txt`
-- [ ] Configurar pytest con `conftest.py` vacío
-- [ ] Verificar que `npm run dev` y `uvicorn` arrancan sin errores
-- [ ] Actualizar `CLAUDE.md` con comandos reales
+- [x] Inicializar proyecto Next.js con TypeScript y Tailwind
+- [x] Inicializar proyecto FastAPI con Pydantic y uvicorn
+- [x] Crear `pyproject.toml` y `requirements.txt`
+- [x] Configurar pytest con `conftest.py` vacío
+- [x] Verificar que `npm run dev` y `uvicorn` arrancan sin errores
+- [x] Actualizar `CLAUDE.md` con comandos reales
 
 Criterio de salida: ambos servidores corren; tests vacíos pasan.
 
@@ -116,15 +116,15 @@ Criterio de salida: ambos servidores corren; tests vacíos pasan.
 **Objetivo:** definir con precisión el formato del escenario YAML y los
 modelos Pydantic antes de implementar lógica.
 
-- [ ] Diseñar schema YAML del escenario (estados, transiciones, acciones,
+- [x] Diseñar schema YAML del escenario (estados, transiciones, acciones,
       signos vitales iniciales, reglas de deterioro)
-- [ ] Crear `scenarios/anaphylaxis_perioperative_adult.yaml` con todos los
+- [x] Crear `scenarios/anaphylaxis_perioperative_adult.yaml` con todos los
       valores marcados `# PENDING_VALIDATION`
-- [ ] Crear `clinical/sources/anaphylaxis_sources.yaml` con las fuentes
+- [x] Crear `clinical/sources/anaphylaxis_sources.yaml` con las fuentes
       iniciales (NAP6, WAO Guidelines, etc.) con los campos requeridos
-- [ ] Implementar modelos Pydantic en `backend/app/models/`
-- [ ] Implementar `scenario_loader.py` con validación estricta
-- [ ] Tests: cargar el YAML y validar contra el schema
+- [x] Implementar modelos Pydantic en `backend/app/models/`
+- [x] Implementar `scenario_loader.py` con validación estricta
+- [x] Tests: cargar el YAML y validar contra el schema
 
 Criterio de salida: el YAML carga, valida y produce objetos Pydantic sin
 errores. Todas las reglas tienen estado explícito.
@@ -134,23 +134,23 @@ errores. Todas las reglas tienen estado explícito.
 ### Etapa 2 — Motor clínico (FSM + tiempo)
 **Objetivo:** núcleo de la simulación funcionando, sin frontend.
 
-- [ ] Implementar `state_machine.py`:
+- [x] Implementar `state_machine.py`:
   - Estados del escenario de anafilaxia (ver sección estados abajo)
   - Transiciones determinísticas basadas en acciones y tiempo
-- [ ] Implementar `time_engine.py`:
+- [x] Implementar `time_engine.py`:
   - Tick configurable (ej. 1 segundo simulado = N ms reales)
   - Función de deterioro por estado sin tratamiento
   - Cálculo de variables fisiológicas derivadas (PA, FC, SpO2)
-- [ ] Implementar `action_processor.py`:
+- [x] Implementar `action_processor.py`:
   - Lista de acciones válidas por estado
   - Efecto de cada acción sobre el estado del paciente
   - Log inmutable de cada acción con timestamp simulado
-- [ ] Implementar `outcome_evaluator.py`:
+- [x] Implementar `outcome_evaluator.py`:
   - Desenlace 1: Resolución completa (tratamiento correcto y oportuno)
   - Desenlace 2: Daño residual / complicación (tratamiento tardío o incompleto)
   - Desenlace 3: Muerte (sin tratamiento o tratamiento crítico omitido)
-- [ ] Tests unitarios para cada módulo
-- [ ] Tests de integración: recorrer el escenario completo con acciones
+- [x] Tests unitarios para cada módulo
+- [x] Tests de integración: recorrer el escenario completo con acciones
       predefinidas y verificar desenlace
 
 Criterio de salida: se puede ejecutar el escenario completo desde pytest
@@ -161,15 +161,15 @@ con tres rutas distintas y obtener el desenlace esperado en cada una.
 ### Etapa 3 — API REST
 **Objetivo:** exponer el motor clínico como servicio HTTP.
 
-- [ ] `POST /sessions` — inicia sesión, retorna `session_id` y estado inicial
-- [ ] `GET /sessions/{id}/state` — estado actual del paciente
-- [ ] `POST /sessions/{id}/actions` — aplica una acción, retorna nuevo estado
-- [ ] `GET /sessions/{id}/log` — log completo de acciones
-- [ ] `POST /sessions/{id}/advance-time` — avanza el reloj simulado
-- [ ] `GET /sessions/{id}/outcome` — desenlace si la sesión terminó
-- [ ] `GET /sessions/{id}/debrief` — debriefing estructurado
-- [ ] `GET /scenarios` — lista de escenarios disponibles
-- [ ] Tests de endpoints con `httpx` y `pytest`
+- [x] `POST /sessions` — inicia sesión, retorna `session_id` y estado inicial
+- [x] `GET /sessions/{id}/state` — estado actual del paciente
+- [x] `POST /sessions/{id}/actions` — aplica una acción, retorna nuevo estado
+- [x] `GET /sessions/{id}/log` — log completo de acciones
+- [x] `POST /sessions/{id}/advance-time` — avanza el reloj simulado
+- [x] `GET /sessions/{id}/outcome` — desenlace si la sesión terminó
+- [x] `GET /sessions/{id}/debrief` — debriefing estructurado
+- [x] `GET /scenarios` — lista de escenarios disponibles
+- [x] Tests de endpoints con `httpx` y `pytest`
 
 Criterio de salida: todos los endpoints responden correctamente; las
 sesiones son stateful en memoria (sin DB todavía).
@@ -179,14 +179,14 @@ sesiones son stateful en memoria (sin DB todavía).
 ### Etapa 4 — Frontend básico
 **Objetivo:** interfaz funcional conectada al backend.
 
-- [ ] Pantalla de selección de escenario (`/`)
-- [ ] Monitor de signos vitales en tiempo real (FC, PA, SpO2, FR, temperatura)
-- [ ] Panel de acciones disponibles (botones con las acciones del estado actual)
-- [ ] Timeline de acciones realizadas
-- [ ] Estado textual del paciente (descripción clínica)
-- [ ] Avance de tiempo con botón o automático
-- [ ] Pantalla de desenlace
-- [ ] Pantalla de debriefing con:
+- [x] Pantalla de selección de escenario (`/`)
+- [x] Monitor de signos vitales en tiempo real (FC, PA, SpO2, FR, temperatura)
+- [x] Panel de acciones disponibles (botones con las acciones del estado actual)
+- [x] Timeline de acciones realizadas
+- [x] Estado textual del paciente (descripción clínica)
+- [x] Avance de tiempo con botón o automático
+- [x] Pantalla de desenlace
+- [x] Pantalla de debriefing con:
   - Resumen de la sesión (tiempo total, acciones tomadas)
   - Análisis de acciones correctas, tardías y omitidas
   - Comparación con protocolo de referencia
@@ -201,11 +201,11 @@ de inicio a fin en el navegador.
 **Objetivo:** reemplazar estado en memoria por PostgreSQL; habilitar
 flujo de revisión clínica.
 
-- [ ] Esquema de base de datos (sesiones, logs, usuarios)
-- [ ] Migración con Alembic
-- [ ] Autenticación básica (sin roles complejos aún)
-- [ ] Panel de validación: marcar reglas como `VALIDATED` con firma y fecha
-- [ ] Exportar sesión como PDF para portafolio docente
+- [x] Esquema de base de datos (sesiones, logs, usuarios)
+- [x] Migración con Alembic
+- [x] Autenticación básica (sin roles complejos aún)
+- [x] Panel de validación: marcar reglas como `VALIDATED` con firma y fecha
+- [x] Exportar sesión como PDF para portafolio docente
 
 ---
 
