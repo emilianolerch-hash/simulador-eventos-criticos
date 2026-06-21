@@ -1,10 +1,10 @@
-FROM python:3.11-slim AS base
+FROM python:3.12-slim AS base
 
 WORKDIR /app
 
-# System deps for psycopg2-binary
+# System deps for psycopg2-binary + curl (requerido por el healthcheck de docker-compose)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc \
+    libpq-dev gcc curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
